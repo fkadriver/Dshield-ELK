@@ -189,7 +189,7 @@ services:
       - "./logstash_pipeline/:/usr/share/logstash/pipeline/"
       - "./logstash_GeoLite2/GeoLite2-City.mmdb:/etc/logstash/ingest-geoip/GeoLite2-City.mmdb"
     ports:
-      - {LOGSTASH_PORT}:5044
+      - ${LOGSTASH_PORT}:5044
     environment:
       - xpack.monitoring.enabled=false
       - ELASTIC_USER=elastic
