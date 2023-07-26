@@ -22,6 +22,7 @@ services:
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
+      - "./elasticsearch/scripts/:/usr/share/elasticsearch/scripts/"
     user: "0"
     command: >
       bash -c '
@@ -185,9 +186,9 @@ services:
     volumes:
       - certs:/usr/share/logstash/certs
       - logstashdata01:/usr/share/logstash/data
-      - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
-      - "./logstash_pipeline/:/usr/share/logstash/pipeline/"
-      - "./logstash_GeoLite2/GeoLite2-City.mmdb:/etc/logstash/ingest-geoip/GeoLite2-City.mmdb"
+      - "./logstash/ingest_data/:/usr/share/logstash/ingest_data/"
+      - "./logstash/pipeline/:/usr/share/logstash/pipeline/"
+      - "./logstash/GeoLite2/GeoLite2-City.mmdb:/etc/logstash/ingest-geoip/GeoLite2-City.mmdb"
     ports:
       - ${LOGSTASH_PORT}:5044
     environment:
