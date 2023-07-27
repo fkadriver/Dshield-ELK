@@ -116,7 +116,21 @@ services:
         ]
       interval: 10s
       timeout: 10s
-      retries: 120
+      retries: 120 
+
+  cowrie:
+    depends_on:
+      es01:
+        condition: service_healthy
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    volumes:
+      - "./elasticsearch/scripts/:/usr/share/elasticsearch/scripts/"
+      - certs:/usr/share/elasticsearch/config/certs
+    # user: "0"
+    entrypoint: /usr/share/elasticsearch/scripts/cowrie-setup.sh
+    environment:
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+
 
   kibana:
     depends_on:
