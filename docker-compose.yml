@@ -83,7 +83,7 @@ services:
     volumes:
       - certs:/usr/share/elasticsearch/config/certs
       - esdata01:/usr/share/elasticsearch/data
-      - "./elasticsearch/scripts/:/usr/share/elasticsearch/scripts/"
+      - ${SCRIPTS_DIR}:/usr/share/elasticsearch/scripts
     ports:
       - ${ES_PORT}:9200
     environment:
@@ -122,15 +122,17 @@ services:
     depends_on:
       es01:
         condition: service_healthy
+      kibana:
+        condition: service_healthy
     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     volumes:
-      - "./elasticsearch/scripts/:/usr/share/elasticsearch/scripts/"
+      - ${SCRIPTS_DIR}:/usr/share/elasticsearch/scripts
       - certs:/usr/share/elasticsearch/config/certs
     # user: "0"
     entrypoint: /usr/share/elasticsearch/scripts/cowrie-setup.sh
-    environment:
+    environment: 
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-
+      - KIBANA_PASSWORD=${KIBANA_PASSWORD}
 
   kibana:
     depends_on:
@@ -142,6 +144,7 @@ services:
     volumes:
       - certs:/usr/share/kibana/config/certs
       - kibanadata:/usr/share/kibana/data
+      - ${SCRIPTS_DIR}:/usr/share/kibana/scripts
     ports:
       - ${KIBANA_PORT}:5601
     environment:
