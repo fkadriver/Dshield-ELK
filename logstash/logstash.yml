@@ -4,3 +4,4 @@ config.reload.interval: 3s
 pipeline.ecs_compatibility: disabled
 xpack.geoip.download.endpoint: https://geoip.elastic.co/v1/database
 xpack.geoip.downloader.enabled: true
+xpack.monitoring.enabled: false
