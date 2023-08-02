@@ -118,22 +118,6 @@ services:
       timeout: 10s
       retries: 120 
 
-  cowrie:
-    depends_on:
-      es01:
-        condition: service_healthy
-      kibana:
-        condition: service_healthy
-    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-    volumes:
-      - ${SCRIPTS_DIR}:/usr/share/elasticsearch/scripts
-      - certs:/usr/share/elasticsearch/config/certs
-    # user: "0"
-    entrypoint: /usr/share/elasticsearch/scripts/cowrie-setup.sh
-    environment: 
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-      - KIBANA_PASSWORD=${KIBANA_PASSWORD}
-
   kibana:
     depends_on:
       es01:
@@ -166,6 +150,24 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+
+  cowrie:
+    depends_on:
+      es01:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+    image: photon
+    volumes:
+      - ${SCRIPTS_DIR}:/usr/share/scripts
+      - certs:/usr/share/config/certs
+    user: root
+    entrypoint: /usr/share/scripts/cowrie-setup.sh
+    environment: 
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - KIBANA_PASSWORD=${KIBANA_PASSWORD}
+      - ELASTIC_HOSTS=https://es01:9200
+      - KIBANA_HOSTS=http://kibana:5601
 
   metricbeat01:
     depends_on:
@@ -210,7 +212,7 @@ services:
     ports:
       - ${LOGSTASH_PORT}:5044
     environment:
-      - xpack.monitoring.enabled=false
+      - xpack.monitoring.enabled=true
       - ELASTIC_USER=elastic
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - ELASTIC_HOSTS=https://es01:9200
