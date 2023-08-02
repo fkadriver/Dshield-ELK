@@ -28,6 +28,6 @@ $curlcmd -s -H 'Content-Type: application/x-ndjson' -XPUT https://es01:9200/_ind
 # # dashboard setup
 echo "Setting up dshield_sensor"
 # #$curlcmd -H 'Content-Type: application/x-ndjson' -XPUT https://es01:9200/_bulk?pretty --data-binary @dshield_sensor_8.7.1.ndjson
-curl -v --cacert /usr/share/config/certs/ca/ca.crt -u kibana_system:$KIBANA_PASSWORD -X POST https://es01:5601/api/saved_objects/_import -H "kbn-xsrf: true" --form file=@dshield_sensor_8.71.ndjson -H 'kbn-xsrf: true';echo
+curl -v --cacert /usr/share/config/certs/ca/ca.crt -u kibana_system:$KIBANA_PASSWORD -X POST http://kibana:5601/api/saved_objects/_import -H "kbn-xsrf: true" --form file=@dshield_sensor_8.71.ndjson -H 'kbn-xsrf: true';echo
 # curl -u kibana_system:changeme  -X POST localhost:5601/api/saved_objects/_import -H "kbn-xsrf: true" --form file=@dshield_sensor_8.71.ndjson -H 'kbn-xsrf: true'
 
