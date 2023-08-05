@@ -1,45 +1,76 @@
 # DShield-ELK
-## DShield monitoring with ELK stack
+## ​DShield monitoring with a Docker ELK stack
 
-This is an ELK (Elasticsearch Logstash Kibana) stack that is setup to monitor logs from a [DShield](https://dshield.org) honeypot.
+Using an ELK(**e**lasticsearch **l**ogstash **k**ibana) or Elastic Stack is a great way to get a high level view of what is being seen with your [DShield](https://isc.sans.edu/tools/honeypot/)[^1] honeypot.
 
-It is put together using the [Getting started with the Elastic Stack and Docker-Compose](https://github.com/elkninja/elastic-stack-docker-part-one) project and the [Install & Configure Filebeat on Raspberry Pi ARM64 to Parse DShield Sensor Logs](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056) diary.
+For those that don't have a dedicated ELK stack already or are just looking for a way to monitor your honeypot from a separate device (in my case, I didn't want to put more holes in my internal firewall), follow this step-by-step guide to get up and running quickly.
 
-## Usage
+First of we need to get logs from the honeypot configured to use an ELK beat, if you want a great guide on collecting all the logs see this [diary](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)[^2] posted on the ISC page.
 
-This project assumes you have:
-* a running [DShield Honeypot](https://www.dshield.org/tools/honeypot/)
-* Docker (tested on Ubuntu 20.04.6 LTS running Docker version 24.0.5)
-* Have setup filebeats per [Install & Configure Filebeat on Raspberry Pi ARM64 to Parse DShield Sensor Logs](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)
-* Confirm tcp packets can get to the host
+This is an ELK (Elasticsearch Logstash Kibana) stack that is setup to monitor logs from a [DShield](https://dshield.org/)[^1] honeypot.
 
-1. clone this project to a local computer
-1. Change any environment variables in [.env](./.env)
-    * Recomend changing at least:
-        * **ELASTIC_PASSWORD**
-        * **KIBANA_PASSWORD**
-        * If you want to use specific DNS server you need to change the **DNS_SERVER** variable and uncomment the **# nameserver** lines in the logstash/logstash-2*.conf and logstash/logstash-3*.conf files
-        Else it will use what ever is setup on the host
-1. If running from a CLI use `docker compose up -d` to start from the directory with [docker-compose.yml](./docker-compose.yml)
-Else use what ever cmd you need to bring up a docker compose
-1. Once the stack is up, the following port should be exposed on your host
-    * 5601: Kibana
-        * User: elastic
-        * Password: **${ELASTIC_PASSWORD}**
-    * 9200: Elastic
-        * User: elastic
-        * Password: **${ELASTIC_PASSWORD}**
-        * since version 8, the connection to ES is secured with a self signed cert, so you will have to use `https://localhost:9200` if you need to connect directly to ES.  Most of the work is done through kibana `http://localhost:5601`
-    * 5044: Logstasch
-        * This is setup to recieve any beats input, but only has filters and output for cowrie* from the [diary](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)
+It is put together using the [Getting started with the Elastic Stack and Docker-Compose](https://github.com/elkninja/elastic-stack-docker-part-one)[^3] project and the [Install & Configure Filebeat on Raspberry Pi ARM64 to Parse DShield Sensor Logs](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)[^2] diary. The only change is to edit the **filebeat.yml** to send to the ip address of the device you intend to run [**Dshield-ELK**](https://github.com/fkadriver/Dshield-ELK)[^4] on.
+
+###Usage
+[**Dshield-ELK**](https://github.com/fkadriver/Dshield-ELK)[^4]assumes the following prior to starting:
+- a running [DShield Honeypot](https://www.dshield.org/tools/honeypot/)[^1]
+- Docker (tested on Ubuntu 20.04.6 LTS running Docker version 24.0.5, but this should work on any platform)
+- Have setup filebeats per [Install & Configure Filebeat on Raspberry Pi ARM64 to Parse DShield Sensor Logs](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)[^2] up to the **Setup Logstash Collection & Parsing**
+- Confirm **tcp port 5044** can get to the host. This port will not be up to start, but is brought up during the following docker compose.
+
+**Steps to configure:**
+1. Clone [**Dshield-ELK**](https://github.com/fkadriver/Dshield-ELK)[^4] to a local directory.
+      - Ex cmd. `git clone https://github.com/fkadriver/Dshield-ELK.git `
+2. Change any environment variables in [.env](https://github.com/fkadriver/Dshield-ELK/blob/main/.env)
+    - Recommend changing at least:
+        - **ELASTIC\_PASSWORD** is the password that is used for administrative access to both Elastic and Kibana
+        - **KIBANA\_PASSWORD** is only used as the internal password for Kibana to communicate to Elastic
+        - (Optional)**STACK\_VERSION**  **is the version of elastic used in this stack. The build has been tested with**  **8.8.2**  **but any version should work**
+        - (Optional)**DNS_SERVER** Is a list of DNS Sever(s) used in the filters. The default setup in each filter is to use what ever dns settings that are defined on the host.If you want to use specific DNS server(s) you need to change the **DNS_SERVER** variable and un-comment the **# nameserver** lines in the following files:
+            - logstash-200-filter-cowrie.conf: line 115
+            - logstash-202-filter-cowrie-sqlite.conf: line 284
+            - logstash-300-filter-iptables.conf: line 63
+3. Once the project and any setting changes (if applicable) have been completed, it is time to bring up the stack. This will take a few minutes especially if you have not previously pulled the elastic images previously.
+    - From a command line change to the folder with [docker-compose.yml](https://github.com/fkadriver/Dshield-ELK/blob/main/docker-compose.yml) then run `docker compose up -d` (the **-d** is optional, but without it, when you close the prompt or stop the command the container will shut down). See [Overview of docker compose CLI](https://docs.docker.com/compose/reference/)[^5] for more information about the docker compose cmd
+1. Once the stack is up, the following ports should be exposed on your host:
+    - **5601** : Kibana
+        - User: elastic
+        - Password: **${ELASTIC\_PASSWORD}**
+    - **9200** : Elastic
+        - User: elastic
+        - Password: **${ELASTIC\_PASSWORD}**
+        - since version 8, the connection to ES is secured with a self signed cert, so you will have to use [**https://localhost:9200**](https://localhost:9200/) if you need to connect directly to ES. Most of the work is done through Kibana [**http://localhost:5601**](http://localhost:5601/)
+    - **5044** : Logstash
+        - This is setup to receive any beats input, but only has filters and output for **cowrie\*** logs from the [diary](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)[^2].
+        - Additional filter can be added to the [logstash/pipeline](../logstash/pipline) directory.
+2. Connect to Kibana on port 5601 ([**http://localhost:5601**](http://localhost:5601/) ) using the user **elastic** and the password **{ELASTIC\_PASSWORD}** from the [.env](https://github.com/fkadriver/Dshield-ELK/blob/main/.env) file.
+3. If everything worked, you should be able to open **[Logs DShield Sensor] Overview** dashboard
+4. Here is a snip of my dashboard over the past 24 hours![Snip of Dashboard](./DashboardSnip.png)
+5. You can change the order of any column, mousing over an item lets you filter in or out that item from the entire dashboard.
+6. Don't forget to look at the raw logs (bottom of the dashboard) for details that might not be parsed into the pretty graphs.
+
+**Things to remember:**
+- This will only collect logs from the honeypot while it is running
+- Since the honeypot is running **filebeat** , it will cache logs for a period. When you first start this stack it will take the cached logs from the honeypot as fast as it can ingest them.
+- For more information about the dashboard see the end of the [diary](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)[^2].
+
+**Issues and troubleshooting:**
+- No logs are showing up in Kibana/Elastic
+  - Confirm filebeat is running on the honeypot.
+  - Confirm that Logstash is running in the docker container.
+  - Confirm that you can connect to port 5044 from the honeypot
+  - Look for filebeat errors on the sensor
+    - `sudo grep filebeat /var/log/syslog|egrep -i 'error|warn'`
+- Logstash starts and then dies
+  - Look at the logs of the container `docker logs dshield-elk-logstash01-1` for errors. The errors I have seen are usually about permissions on the file logstash.yml
+- Docker gives error about not enough permissions
+  - Run docker with sudo privileges `sudo docker ...`
+  - Run docker in [Rootless](https://docs.docker.com/engine/security/rootless/) mode[^6]
 
 
-Things to remember:
-* This will only collect logs from the honeypot while it is running
-* Since the honeypot is running filebeat, it will cache logs for a period.  When you first start this stack it will take the cached logs from the honeypot as fast as it can injest them.
-* For more information about the dashboard see the end of the [diary](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)
-
-Again a quick thanks to the 2 projects I used for a basis of  this:
-* [Getting started with the Elastic Stack and Docker-Compose](https://github.com/elkninja/elastic-stack-docker-part-one)
-* [Install & Configure Filebeat on Raspberry Pi ARM64 to Parse DShield Sensor Logs](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)
-
+[^1]:[https://isc.sans.edu/tools/honeypot/](https://isc.sans.edu/tools/honeypot/)
+[^2]:[https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)
+[^3]:https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056
+[^4]:[https://github.com/fkadriver/Dshield-ELK](https://github.com/fkadriver/Dshield-ELK)
+[^5]:https://docs.docker.com/compose/reference/
+[^6]:https://docs.docker.com/engine/security/rootless/
