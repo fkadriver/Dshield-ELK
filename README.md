@@ -19,9 +19,14 @@ It is put together using the [Getting started with the Elastic Stack and Docker-
 - Confirm **tcp port 5044** can get to the host. This port will not be up to start, but is brought up during the following docker compose.
 
 **Steps to configure:**
+1. Complete the setup of filebeat [Install & Configure Filebeat on Raspberry Pi ARM64 to Parse DShield Sensor Logs](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)[^2] up to the **Setup Logstash Collection & Parsing**
 1. Clone [**Dshield-ELK**](https://github.com/fkadriver/Dshield-ELK)[^4] to a local directory.
-      - Ex cmd. `git clone https://github.com/fkadriver/Dshield-ELK.git `
+      - `git clone https://github.com/fkadriver/Dshield-ELK.git `
+1. Change to to the **DShield-ELK** directory
+      - `cd DShield-ELK`
 2. Change any environment variables in [.env](https://github.com/fkadriver/Dshield-ELK/blob/main/.env)
+    - Any editor can be used, but recommend using nano if you are not familiar with something else.
+    - `nano .env` (note the '.' at the front of **.env**)
     - Recommend changing at least:
         - **ELASTIC\_PASSWORD** is the password that is used for administrative access to both Elastic and Kibana
         - **KIBANA\_PASSWORD** is only used as the internal password for Kibana to communicate to Elastic
@@ -30,16 +35,20 @@ It is put together using the [Getting started with the Elastic Stack and Docker-
             - logstash-200-filter-cowrie.conf: line 115
             - logstash-202-filter-cowrie-sqlite.conf: line 284
             - logstash-300-filter-iptables.conf: line 63
+1. Save the **.env** file to the same location
+    - if using nano, <CTRL>-o and then <CTRL>-x
 3. Once the project and any setting changes (if applicable) have been completed, it is time to bring up the stack. This will take a few minutes especially if you have not previously pulled the elastic images previously.
-    - From a command line change to the folder with [docker-compose.yml](https://github.com/fkadriver/Dshield-ELK/blob/main/docker-compose.yml) then run `docker compose up -d` (the **-d** is optional, but without it, when you close the prompt or stop the command the container will shut down). See [Overview of docker compose CLI](https://docs.docker.com/compose/reference/)[^5] for more information about the docker compose cmd
-1. Once the stack is up, the following ports should be exposed on your host:
+    - `docker compose up -d` (the **-d** is optional, but without it, when you close the prompt or stop the command the container will shut down). See [Overview of docker compose CLI](https://docs.docker.com/compose/reference/)[^5] for more information about the docker compose cmd
+1. Open a browser and confirm that the following ports are your host:
     - **5601** : Kibana
         - User: elastic
         - Password: **${ELASTIC\_PASSWORD}**
+        - [https://localhost:5601](https://localhost:5601)
     - **9200** : Elastic
         - User: elastic
         - Password: **${ELASTIC\_PASSWORD}**
-        - since version 8, the connection to ES is secured with a self signed cert, so you will have to use [**https://localhost:9200**](https://localhost:9200/) if you need to connect directly to ES. Most of the work is done through Kibana [**http://localhost:5601**](http://localhost:5601/)
+        - since version 8, the connection to ES is secured with a self signed cert, so you will have to use [**https://localhost:9200**](https://localhost:9200/)
+1. Logstash will also be running on port 5044
     - **5044** : Logstash
         - This is setup to receive any beats input, but only has filters and output for **cowrie\*** logs from the [diary](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)[^2].
         - Additional filter can be added to the [logstash/pipeline](../logstash/pipline) directory.
@@ -58,6 +67,7 @@ It is put together using the [Getting started with the Elastic Stack and Docker-
 - No logs are showing up in Kibana/Elastic
   - Confirm filebeat is running on the honeypot.
   - Confirm that Logstash is running in the docker container.
+    - depending on what software is installed on the host running you may have access to 1 or more of the following cmds:
   - Confirm that you can connect to port 5044 from the honeypot
   - Look for filebeat errors on the sensor
     - `sudo grep filebeat /var/log/syslog|egrep -i 'error|warn'`
