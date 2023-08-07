@@ -30,13 +30,18 @@ It is put together using the [Getting started with the Elastic Stack and Docker-
     - Recommend changing at least:
         - **ELASTIC\_PASSWORD** is the password that is used for administrative access to both Elastic and Kibana
         - **KIBANA\_PASSWORD** is only used as the internal password for Kibana to communicate to Elastic
-        - (Optional)**STACK\_VERSION**  **is the version of elastic used in this stack. The build has been tested with**  **8.8.2**  **but any version should work**
-        - (Optional)**DNS_SERVER** Is a list of DNS Sever(s) used in the filters. The default setup in each filter is to use what ever dns settings that are defined on the host.If you want to use specific DNS server(s) you need to change the **DNS_SERVER** variable and un-comment the **# nameserver** lines in the following files:
+    - Optional
+        - **STACK\_VERSION**  **is the version of elastic used in this stack. The build has been tested with**  **8.8.2**  **but any version should work**
+        - **DNS_SERVER** Is a list of DNS Sever(s) used in the filters. The default setup in each filter is to use what ever dns settings that are defined on the host.If you want to use specific DNS server(s) you need to change the **DNS_SERVER** variable and un-comment the **# nameserver** lines in the following files:
             - logstash-200-filter-cowrie.conf: line 115
             - logstash-202-filter-cowrie-sqlite.conf: line 284
             - logstash-300-filter-iptables.conf: line 63
+        - Memory Limits are the most memory that docker will allocate for each of the ELK containers.  Default to **1073741824** (1GB) but can be expanded if you have the resources
+          - ES_MEM_LIMIT: Elastic Memory 
+          - KB_MEM_LIMIT: Kibana Memory
+          - LS_MEM_LIMIT: Logstash memory
 1. Save the **.env** file to the same location
-    - if using nano, <CTRL>-o and then <CTRL>-x
+    - if using nano, **^o** and then **^x**
 3. Once the project and any setting changes (if applicable) have been completed, it is time to bring up the stack. This will take a few minutes especially if you have not previously pulled the elastic images previously.
     - `docker compose up -d` (the **-d** is optional, but without it, when you close the prompt or stop the command the container will shut down). See [Overview of docker compose CLI](https://docs.docker.com/compose/reference/)[^5] for more information about the docker compose cmd
 1. Open a browser and confirm that the following ports are your host:
@@ -47,11 +52,11 @@ It is put together using the [Getting started with the Elastic Stack and Docker-
     - **9200** : Elastic
         - User: elastic
         - Password: **${ELASTIC\_PASSWORD}**
-        - since version 8, the connection to ES is secured with a self signed cert, so you will have to use [**https://localhost:9200**](https://localhost:9200/)
+        - Since version 8, the connection to ES is secured with a self signed cert, so you will have to use [**https://localhost:9200**](https://localhost:9200/). (You might be prompted to use an insecure or self-signed certificate.  This is normal)
 1. Logstash will also be running on port 5044
     - **5044** : Logstash
         - This is setup to receive any beats input, but only has filters and output for **cowrie\*** logs from the [diary](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)[^2].
-        - Additional filter can be added to the [logstash/pipeline](../logstash/pipline) directory.
+        - Additional filters can be added to the [logstash/pipeline](../logstash/pipline) directory.
 2. Connect to Kibana on port 5601 ([**http://localhost:5601**](http://localhost:5601/) ) using the user **elastic** and the password **{ELASTIC\_PASSWORD}** from the [.env](https://github.com/fkadriver/Dshield-ELK/blob/main/.env) file.
 3. If everything worked, you should be able to open **[Logs DShield Sensor] Overview** dashboard
 4. Here is a snip of my dashboard over the past 24 hours![Snip of Dashboard](./DashboardSnip.png)
@@ -67,7 +72,6 @@ It is put together using the [Getting started with the Elastic Stack and Docker-
 - No logs are showing up in Kibana/Elastic
   - Confirm filebeat is running on the honeypot.
   - Confirm that Logstash is running in the docker container.
-    - depending on what software is installed on the host running you may have access to 1 or more of the following cmds:
   - Confirm that you can connect to port 5044 from the honeypot
   - Look for filebeat errors on the sensor
     - `sudo grep filebeat /var/log/syslog|egrep -i 'error|warn'`
