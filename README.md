@@ -56,7 +56,7 @@ It is put together using the [Getting started with the Elastic Stack and Docker-
 1. Logstash will also be running on port 5044
     - **5044** : Logstash
         - This is setup to receive any beats input, but only has filters and output for **cowrie\*** logs from the [diary](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)[^2].
-        - Additional filters can be added to the [logstash/pipeline](../logstash/pipline) directory.
+        - Additional filters can be added to the [logstash/pipeline](./logstash/pipline) directory.
 2. Connect to Kibana on port 5601 ([**http://localhost:5601**](http://localhost:5601/) ) using the user **elastic** and the password **{ELASTIC\_PASSWORD}** from the [.env](https://github.com/fkadriver/Dshield-ELK/blob/main/.env) file.
 3. If everything worked, you should be able to open **[Logs DShield Sensor] Overview** dashboard
 4. Here is a snip of my dashboard over the past 24 hours![Snip of Dashboard](./DashboardSnip.png)
