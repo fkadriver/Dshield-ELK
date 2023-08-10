@@ -24,7 +24,7 @@ It is put together using the [Getting started with the Elastic Stack and Docker-
       - `git clone https://github.com/fkadriver/Dshield-ELK.git `
 1. Change to to the **DShield-ELK** directory
       - `cd DShield-ELK`
-2. Change any environment variables in [.env](https://github.com/fkadriver/Dshield-ELK/blob/main/.env)
+2. Change any environment variables in [.env](.env)
     - Any editor can be used, but recommend using nano if you are not familiar with something else.
     - `nano .env` (note the '.' at the front of **.env**)
     - Recommend changing at least:
@@ -56,10 +56,10 @@ It is put together using the [Getting started with the Elastic Stack and Docker-
 1. Logstash will also be running on port 5044
     - **5044** : Logstash
         - This is setup to receive any beats input, but only has filters and output for **cowrie\*** logs from the [diary](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)[^2].
-        - Additional filters can be added to the [logstash/pipeline](../logstash/pipline) directory.
-2. Connect to Kibana on port 5601 ([**http://localhost:5601**](http://localhost:5601/) ) using the user **elastic** and the password **{ELASTIC\_PASSWORD}** from the [.env](https://github.com/fkadriver/Dshield-ELK/blob/main/.env) file.
+        - Additional filters can be added to the [logstash/pipeline](logstash/pipeline) directory.
+2. Connect to Kibana on port 5601 ([**http://localhost:5601**](http://localhost:5601/) ) using the user **elastic** and the password **{ELASTIC\_PASSWORD}** from the [.env](.env) file.
 3. If everything worked, you should be able to open **[Logs DShield Sensor] Overview** dashboard
-4. Here is a snip of my dashboard over the past 24 hours![Snip of Dashboard](./DashboardSnip.png)
+4. Here is a snip of my dashboard over the past 24 hours![Snip of Dashboard](DashboardSnip.png)
 5. You can change the order of any column, mousing over an item lets you filter in or out that item from the entire dashboard.
 6. Don't forget to look at the raw logs (bottom of the dashboard) for details that might not be parsed into the pretty graphs.
 
