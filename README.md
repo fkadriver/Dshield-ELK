@@ -20,6 +20,16 @@ It is put together using the [Getting started with the Elastic Stack and Docker-
 
 **Steps to configure:**
 1. Complete the setup of filebeat [Install & Configure Filebeat on Raspberry Pi ARM64 to Parse DShield Sensor Logs](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)[^2] up to the **Setup Logstash Collection & Parsing**
+1. Install docker [3] on Ubuntu 20.04.6
+      - `sudo apt-get install ca-certificates curl gnupg`
+      - `sudo install -m 0755 -d /etc/apt/keyrings`
+      - `curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg`
+      - `sudo chmod a+r /etc/apt/keyrings/docker.gpg`
+      - `echo \
+      "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+      "(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null`
+      - `sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin`
 1. Clone [**Dshield-ELK**](https://github.com/fkadriver/Dshield-ELK)[^4] to a local directory.
       - `git clone https://github.com/fkadriver/Dshield-ELK.git `
 1. Change to to the **DShield-ELK** directory
@@ -37,9 +47,9 @@ It is put together using the [Getting started with the Elastic Stack and Docker-
             - logstash-202-filter-cowrie-sqlite.conf: line 284
             - logstash-300-filter-iptables.conf: line 63
         - Memory Limits are the most memory that docker will allocate for each of the ELK containers.  Default to **1073741824** (1GB) but can be expanded if you have the resources
-          - ES_MEM_LIMIT: Elastic Memory 
-          - KB_MEM_LIMIT: Kibana Memory
-          - LS_MEM_LIMIT: Logstash memory
+          - **ES_MEM_LIMIT**: Elastic Memory 
+          - **KB_MEM_LIMIT**: Kibana Memory
+          - **LS_MEM_LIMIT**: Logstash memory
 1. Save the **.env** file to the same location
     - if using nano, **^o** and then **^x**
 3. Once the project and any setting changes (if applicable) have been completed, it is time to bring up the stack. This will take a few minutes especially if you have not previously pulled the elastic images previously.
