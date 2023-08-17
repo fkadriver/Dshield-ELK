@@ -77,7 +77,9 @@ It is put together using the [Getting started with the Elastic Stack and Docker-
 1. Save the **.env** file to the same location
     - if using nano, **^o** and then **^x**
 3. Once the project and any setting changes (if applicable) have been completed, it is time to bring up the stack. This will take a few minutes especially if you have not previously pulled the elastic images previously.
-    ```docker compose up -d```
+    ```
+   docker compose up -d
+    ```
     (the **-d** is optional, but without it, when you close the prompt or stop the command the container will shut down). See [Overview of docker compose CLI](https://docs.docker.com/compose/reference/)[^5] for more information about the docker compose cmd
 1. Open a browser and confirm that the following ports are your host:
     - **5601** : Kibana
