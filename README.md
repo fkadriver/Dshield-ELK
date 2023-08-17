@@ -21,22 +21,46 @@ It is put together using the [Getting started with the Elastic Stack and Docker-
 **Steps to configure:**
 1. Complete the setup of filebeat [Install & Configure Filebeat on Raspberry Pi ARM64 to Parse DShield Sensor Logs](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)[^2] up to the **Setup Logstash Collection & Parsing**
 1. Install docker [3] on Ubuntu 20.04.6
-      - `sudo apt-get install ca-certificates curl gnupg`
-      - `sudo install -m 0755 -d /etc/apt/keyrings`
-      - `curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg`
-      - `sudo chmod a+r /etc/apt/keyrings/docker.gpg`
-      - `echo \
+    - Update repos
+    ```
+    sudo apt-get update
+    sudo apt-get install ca-certificates curl gnupg
+    ```
+    - Add Docker’s official GPG key:
+    ```
+    sudo install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    sudo chmod a+r /etc/apt/keyrings/docker.gpg
+    ```
+    - Use the following command to set up the repository:
+    ```
+    echo \
       "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-      "(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null`
-      - `sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin`
+      "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    ```
+    - Update the `apt` package index:
+    ```
+    sudo apt update
+    ```    
+    - Install Docker Engine
+    ```
+    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    ```
 1. Clone [**Dshield-ELK**](https://github.com/fkadriver/Dshield-ELK)[^4] to a local directory.
-      - `git clone https://github.com/fkadriver/Dshield-ELK.git `
+      ```
+      git clone https://github.com/fkadriver/Dshield-ELK.git
+      ```
 1. Change to to the **DShield-ELK** directory
-      - `cd DShield-ELK`
+      ```
+      cd DShield-ELK
+      ```
 2. Change any environment variables in [.env](.env)
     - Any editor can be used, but recommend using nano if you are not familiar with something else.
-    - `nano .env` (note the '.' at the front of **.env**)
+    ```
+    nano .env
+    ``` 
+    (note the '.' at the front of **.env**)
     - Recommend changing at least:
         - **ELASTIC\_PASSWORD** is the password that is used for administrative access to both Elastic and Kibana
         - **KIBANA\_PASSWORD** is only used as the internal password for Kibana to communicate to Elastic
@@ -53,7 +77,8 @@ It is put together using the [Getting started with the Elastic Stack and Docker-
 1. Save the **.env** file to the same location
     - if using nano, **^o** and then **^x**
 3. Once the project and any setting changes (if applicable) have been completed, it is time to bring up the stack. This will take a few minutes especially if you have not previously pulled the elastic images previously.
-    - `docker compose up -d` (the **-d** is optional, but without it, when you close the prompt or stop the command the container will shut down). See [Overview of docker compose CLI](https://docs.docker.com/compose/reference/)[^5] for more information about the docker compose cmd
+    ```docker compose up -d```
+    (the **-d** is optional, but without it, when you close the prompt or stop the command the container will shut down). See [Overview of docker compose CLI](https://docs.docker.com/compose/reference/)[^5] for more information about the docker compose cmd
 1. Open a browser and confirm that the following ports are your host:
     - **5601** : Kibana
         - User: elastic
