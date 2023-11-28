@@ -1,13 +1,13 @@
 # DShield-ELK
 ## ​DShield monitoring with a Docker ELK stack
 
-Using an ELK(**e**lasticsearch **l**ogstash **k**ibana) or Elastic Stack is a great way to get a high level view of what is being seen with your [DShield](https://isc.sans.edu/tools/honeypot/)[^1] honeypot.
+Using an ELK(**E**lasticsearch **L**ogstash **K**ibana) or Elastic Stack is a great way to get a high level view of what is being seen with your [DShield](https://isc.sans.edu/tools/honeypot/)[^1] honeypot.
 
 For those that don't have a dedicated ELK stack already or are just looking for a way to monitor your honeypot from a separate device (in my case, I didn't want to put more holes in my internal firewall), follow this step-by-step guide to get up and running quickly.
 
-First of we need to get logs from the honeypot configured to use an ELK beat, if you want a great guide on collecting all the logs see this [diary](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)[^2] posted on the ISC page.
+First of we need to get logs from the honeypot configured to use an filebeat, if you want a great guide on collecting all the logs see this [diary](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)[^2] posted on the ISC page.
 
-This is an ELK (Elasticsearch Logstash Kibana) stack that is setup to monitor logs from a [DShield](https://dshield.org/)[^1] honeypot.
+This is an ELK stack that is setup to monitor logs from a [DShield](https://dshield.org/)[^1] honeypot.
 
 It is put together using the [Getting started with the Elastic Stack and Docker-Compose](https://github.com/elkninja/elastic-stack-docker-part-one)[^3] project and the [Install & Configure Filebeat on Raspberry Pi ARM64 to Parse DShield Sensor Logs](https://isc.sans.edu/diary/Install+Configure+Filebeat+on+Raspberry+Pi+ARM64+to+Parse+DShield+Sensor+Logs/30056)[^2] diary. The only change is to edit the **filebeat.yml** to send to the ip address of the device you intend to run [**Dshield-ELK**](https://github.com/fkadriver/Dshield-ELK)[^4] on.
 
