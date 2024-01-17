@@ -1,5 +1,6 @@
 # DShield-ELK
 ## ​DShield monitoring with a Docker ELK stack
+Updated version of this is currently being hosted at https://github.com/bruneaug/DShield-SIEM
 
 Using an ELK(**E**lasticsearch **L**ogstash **K**ibana) or Elastic Stack is a great way to get a high level view of what is being seen with your [DShield](https://isc.sans.edu/tools/honeypot/)[^1] honeypot.
 
